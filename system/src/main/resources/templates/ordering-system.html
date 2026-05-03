@@ -6,38 +6,109 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>Ordering System</h1>
-        <span id="userDisplay">jay</span>
-    </nav>
 
-    <div class="container">
-        <div class="panel">
-            <h3>Select Items</h3>
-            <div id="productGrid" class="item-grid">
-                <!-- Data from /api/products loads here -->
-            </div>
+<div id="message"></div>
+
+<div class="navbar">
+    <h1>Ordering System</h1>
+    <div style="display:flex;align-items:center;gap:1.5rem;">
+        <span id="nav-user" style="font-size:13px; opacity:0.9; font-weight: 500;"></span>
+        <a th:href="@{/dashboard}" class="back-btn">← Back to Menu</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="summary-cards">
+        <div class="card blue">
+            <div class="card-label">Total Orders</div>
+            <div class="card-value" id="totalOrders">0</div>
         </div>
-
-        <div class="panel">
-            <h3>Recent Orders</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="orderTableBody">
-                    <!-- Data from /api/orders loads here -->
-                </tbody>
-            </table>
+        <div class="card green">
+            <div class="card-label">Completed</div>
+            <div class="card-value" id="completedOrders">0</div>
+        </div>
+        <div class="card amber">
+            <div class="card-label">Pending</div>
+            <div class="card-value" id="pendingOrders">0</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Total Sales</div>
+            <div class="card-value" id="totalSales">₱0.00</div>
         </div>
     </div>
 
-    <!-- Script at bottom ensures DOM is ready -->
-    <script th:src="@{/js/order-logic.js}"></script>
+    <div class="order-layout">
+        <div class="panel">
+            <h3>Select Items</h3>
+            <div class="form-group">
+                <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
+            </div>
+            <div class="item-grid" id="itemGrid"></div>
+        </div>
+
+        <div class="panel">
+            <h3>Current Cart</h3>
+            <div id="cartItems"></div>
+
+            <div class="cart-summary">
+                <div class="summary-line"><span>Subtotal</span><span id="subtotalDisplay">₱0.00</span></div>
+                <div class="summary-line">
+                    <span>Discount (₱)</span>
+                    <input type="number" id="discountInput" value="0" min="0" oninput="calculateTotal()"/>
+                </div>
+                <div class="total-line"><span>Total</span><span id="totalDisplay">₱0.00</span></div>
+            </div>
+
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="customerName" placeholder="Enter name..." />
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="Cash">Cash</option>
+                        <option value="GCash">GCash</option>
+                        <option value="Card">Card</option>
+                    </select>
+                </div>
+            </div>
+            <button class="place-order-btn" onclick="processCheckout()">Process Checkout</button>
+        </div>
+    </div>
+
+    <h3 style="margin-top:2rem; margin-bottom:1rem;">Recent Orders</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/order-logic.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if(typeof requireLogin === 'function' && requireLogin()) {
+            const user = getCurrentUser();
+            const navUser = document.getElementById('nav-user');
+            if(navUser) navUser.textContent = user ? (user.sub || user.username) : 'User';
+            fetchItems();
+            fetchOrders();
+        }
+    });
+</script>
 </body>
 </html>
