@@ -101,12 +101,23 @@ async function fetchOrders() {
 async function updateStatus(orderId, status) {
     if (!confirm(`Mark order as ${status}?`)) return;
     try {
-        await fetch(`/api/orders/${orderId}/status?status=${status}`, {
+        // Ensure the query parameter key matches your @RequestParam in Java
+        const response = await fetch(`/api/orders/${orderId}/status?status=${status}`, {
             method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
         });
-        fetchOrders();
-    } catch (err) { console.error("Update failed:", err); }
+
+        if (response.ok) {
+            fetchOrders(); // Refresh table to show "CANCELLED"
+        } else {
+            console.error("Failed to update status");
+        }
+    } catch (err) { 
+        console.error("Update failed:", err); 
+    }
 }
 
 async function deleteOrder(orderId) {
