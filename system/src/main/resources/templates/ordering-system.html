@@ -46,10 +46,9 @@
         <div class="panel">
             <h3>Select Items</h3>
             <div class="form-group">
-                <!-- Calls filterItems logic -->
                 <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
             </div>
-            <!-- Data from fetchItems() injected here -->
+            <!-- Data from window.fetchItems() is injected here -->
             <div class="item-grid" id="itemGrid"></div>
         </div>
 
@@ -100,38 +99,38 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <!-- Data from fetchOrders() injected here -->
+            <!-- Data from window.fetchOrders() is injected here -->
             <tbody id="orderTableBody"></tbody>
         </table>
     </div>
 </div>
 
-<!-- SCRIPTS: The order here is critical -->
-<!-- 1. Authentication helpers -->
+<!-- SCRIPT LOADING ORDER: CRITICAL TO FIX ReferenceError -->
+<!-- 1. Load Authentication helper first -->
 <script th:src="@{/js/auth.js}"></script>
 
-<!-- 2. Core logic (Make sure functions here use window.fetchItems) -->
+<!-- 2. Load Core logic (Ensure functions inside use window. prefix) -->
 <script th:src="@{/js/order-logic.js}"></script>
 
-<!-- 3. Page Initialization -->
+<!-- 3. Initialization -->
 <script>
-    // window.onload ensures order-logic.js is fully loaded and parsed
+    // window.onload is used to ensure all scripts (like order-logic.js) are fully parsed
     window.onload = function() {
-        console.log("HTML: Page fully loaded.");
+        console.log("HTML: Initialization started.");
 
         if(typeof requireLogin === 'function' && requireLogin()) {
-            // Update User display
             const user = getCurrentUser();
             const navUser = document.getElementById('nav-user');
-            if(navUser) navUser.textContent = user ? (user.sub || user.username) : 'User';
+            if(navUser) {
+                navUser.textContent = user ? (user.sub || user.username) : 'User';
+            }
             
-            // Check for functions on the window object
+            // Explicitly call from the window object to bypass scoping issues
             if (typeof window.fetchItems === 'function') {
-                console.log("HTML: Calling fetchItems and fetchOrders...");
                 window.fetchItems();
                 window.fetchOrders();
             } else {
-                console.error("HTML: fetchItems not found on window object. Ensure order-logic.js defines it as window.fetchItems.");
+                console.error("HTML: fetchItems still not found. Check order-logic.js path or syntax.");
             }
         }
     };
