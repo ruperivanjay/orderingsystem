@@ -1,24 +1,25 @@
 :root {
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    --glass: rgba(255, 255, 255, 0.05);
+    --bg-dark: #0f172a;
+    --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --primary: #38bdf8;
-    --success: #10b981;
-    --danger: #ef4444;
-    --text: #f1f5f9;
+    --primary-blue: #38bdf8;
+    --success-green: #10b981;
+    --danger-red: #f87171;
+    --text-light: #f1f5f9;
 }
 
 body {
-    background: var(--bg-gradient);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+    color: var(--text-light);
+    font-family: 'Inter', system-ui, sans-serif;
     margin: 0;
+    min-height: 100vh;
 }
 
 .navbar {
     background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
     padding: 1.5rem 5%;
     border-bottom: 1px solid var(--glass-border);
     display: flex;
@@ -27,88 +28,72 @@ body {
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 2rem auto;
     padding: 0 20px;
 }
 
-/* Glassmorphic Panels */
+/* Glass Panels */
 .panel {
-    background: var(--glass);
-    backdrop-filter: blur(16px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
-/* Product Item Cards */
+/* Product Cards */
 .item-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
 }
 
 .item-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1rem;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.3s;
 }
 
 .item-card:hover {
     background: rgba(56, 189, 248, 0.1);
-    border-color: var(--primary);
-    transform: translateY(-5px);
+    border-color: var(--primary-blue);
+    transform: translateY(-3px);
 }
 
-/* Table Design */
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-}
-
-th {
-    text-align: left;
-    color: #94a3b8;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 1rem;
-}
-
-td {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 1.2rem;
-    font-size: 14px;
-}
-
-td:first-child { border-radius: 12px 0 0 12px; }
-td:last-child { border-radius: 0 12px 12px 0; }
-
-/* Status Badges */
+/* Status Badges - The "CANCELLED" Fix */
 .badge {
-    padding: 6px 14px;
-    border-radius: 30px;
+    padding: 6px 12px;
+    border-radius: 99px;
     font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.05em;
 }
 
-.badge-pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
-.badge-completed { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
-.badge-cancelled { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+.badge-pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+.badge-completed { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+.badge-cancelled { background: rgba(239, 68, 68, 0.1); color: var(--danger-red); border: 1px solid rgba(248, 113, 113, 0.2); }
 
-/* Inputs */
-input {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
+/* Buttons */
+button {
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+    font-weight: 600;
+}
+
+.process-btn {
+    background: var(--primary-blue);
+    color: var(--bg-dark);
+    padding: 12px;
+    border-radius: 12px;
     width: 100%;
 }
+
+.process-btn:hover { background: #7dd3fc; }
