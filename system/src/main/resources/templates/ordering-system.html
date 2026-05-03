@@ -19,7 +19,6 @@
 </div>
 
 <div class="container">
-    <!-- Stats Cards -->
     <div class="summary-cards">
         <div class="card blue">
             <div class="card-label">Total Orders</div>
@@ -40,7 +39,6 @@
     </div>
 
     <div class="order-layout">
-        <!-- Product Selection -->
         <div class="panel">
             <h3>Select Items</h3>
             <div class="form-group">
@@ -49,7 +47,6 @@
             <div class="item-grid" id="itemGrid"></div>
         </div>
 
-        <!-- Checkout Panel -->
         <div class="panel">
             <h3>Current Cart</h3>
             <div id="cartItems"></div>
@@ -104,9 +101,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        if(requireLogin()) {
+        if(typeof requireLogin === 'function' && requireLogin()) {
             const user = getCurrentUser();
-            document.getElementById('nav-user').textContent = user ? user.sub : 'User';
+            const navUser = document.getElementById('nav-user');
+            if(navUser) navUser.textContent = user ? (user.sub || user.username) : 'User';
             fetchItems();
             fetchOrders();
         }
