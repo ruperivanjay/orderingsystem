@@ -46,10 +46,8 @@
         <div class="panel">
             <h3>Select Items</h3>
             <div class="form-group">
-                <!-- ID matches filterItems() logic in JS -->
                 <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
             </div>
-            <!-- CRITICAL ID: itemGrid is where products are injected -->
             <div class="item-grid" id="itemGrid"></div>
         </div>
 
@@ -100,7 +98,6 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <!-- CRITICAL ID: orderTableBody is where rows are injected -->
             <tbody id="orderTableBody"></tbody>
         </table>
     </div>
@@ -110,13 +107,15 @@
 <!-- 1. Load Authentication helper first -->
 <script th:src="@{/js/auth.js}"></script>
 
-<!-- 2. Load Core logic (contains fetchItems and fetchOrders) -->
+<!-- 2. Load Core logic -->
 <script th:src="@{/js/order-logic.js}"></script>
 
 <!-- 3. Inline script to initialize the page -->
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Ensure authentication logic exists before calling
+    // Using window.onload ensures order-logic.js is fully parsed before running
+    window.onload = function() {
+        console.log("Page fully loaded. Checking authentication...");
+
         if(typeof requireLogin === 'function' && requireLogin()) {
             const user = getCurrentUser();
             const navUser = document.getElementById('nav-user');
@@ -124,15 +123,15 @@
                 navUser.textContent = user ? (user.sub || user.username) : 'User';
             }
             
-            // Wait a micro-second to ensure logic.js functions are registered
-            if (typeof fetchItems === 'function') {
-                fetchItems();
-                fetchOrders();
+            // Call functions from the window object to fix the ReferenceError
+            if (typeof window.fetchItems === 'function') {
+                window.fetchItems();
+                window.fetchOrders();
             } else {
-                console.error("fetchItems is still not defined. Check order-logic.js for syntax errors.");
+                console.error("fetchItems is missing from global window. Check order-logic.js path.");
             }
         }
-    });
+    };
 </script>
 
 </body>
