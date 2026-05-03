@@ -60,22 +60,62 @@ async function fetchOrders() {
         });
         const orders = await response.json();
         
-        // Update Stats
         document.getElementById('totalOrders').textContent = orders.length;
         document.getElementById('completedOrders').textContent = orders.filter(o => o.status === 'COMPLETED').length;
         document.getElementById('pendingOrders').textContent = orders.filter(o => o.status === 'PENDING').length;
         document.getElementById('totalSales').textContent = `₱${orders.reduce((s, o) => s + (o.totalAmount || 0), 0).toLocaleString()}`;
         
-        // FIX: (o.items || []) prevents the .length error if items list is null
-        document.getElementById('orderTableBody').innerHTML = orders.map(o => `
-            <tr>
-                <td>#${o.orderNumber || o.id}</td>
-                <td>${o.customerName || 'N/A'}</td>
-                <td>${(o.items || []).length} items</td>
-                <td>₱${(o.totalAmount || 0).toFixed(2)}</td>
-                <td><span class="badge badge-${(o.status || 'PENDING').toLowerCase()}">${o.status || 'PENDING'}</span></td>
-                <td>${o.createdAt ? new Date(o.createdAt).toLocaleDateString() : 'N/A'}</td>
-            </tr>
-        `).join('');
+        document.getElementById('orderTableBody').innerHTML = orders.map(o => {
+            const rawDate = o.createdAt || o.orderDate || o.date || o.dateTime;
+            let displayDate = 'N/A';
+            if (rawDate) {
+                const dateObj = new Date(rawDate);
+                if (!isNaN(dateObj.getTime())) displayDate = dateObj.toLocaleDateString();
+            }
+
+            const isPending = (o.status || 'PENDING') === 'PENDING';
+
+            return `
+                <tr>
+                    <td>#${o.orderNumber || o.id}</td>
+                    <td>${o.customerName || 'Walk-in'}</td>
+                    <td>${(o.items || []).length} items</td>
+                    <td>₱${(o.totalAmount || 0).toFixed(2)}</td>
+                    <td><span class="badge badge-${(o.status || 'PENDING').toLowerCase()}">${o.status || 'PENDING'}</span></td>
+                    <td>${displayDate}</td>
+                    <td>
+                        <div class="action-buttons">
+                            ${isPending ? `
+                                <button class="btn-complete" onclick="updateStatus(${o.id}, 'COMPLETED')">Done</button>
+                                <button class="btn-cancel" onclick="updateStatus(${o.id}, 'CANCELLED')">Cancel</button>
+                            ` : ''}
+                            <button class="btn-delete" onclick="deleteOrder(${o.id})">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     } catch (err) { console.error("Error fetching orders:", err); }
+}
+
+async function updateStatus(orderId, status) {
+    if (!confirm(`Mark order as ${status}?`)) return;
+    try {
+        await fetch(`/api/orders/${orderId}/status?status=${status}`, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        fetchOrders();
+    } catch (err) { console.error("Update failed:", err); }
+}
+
+async function deleteOrder(orderId) {
+    if (!confirm("Are you sure you want to delete this order record?")) return;
+    try {
+        await fetch(`/api/orders/${orderId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        fetchOrders();
+    } catch (err) { console.error("Delete failed:", err); }
 }
