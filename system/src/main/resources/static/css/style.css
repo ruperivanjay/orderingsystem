@@ -28,5 +28,15 @@ body { font-family: "Segoe UI", sans-serif; background: #f4f7fa; color: #1e293b;
 .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .badge-pending { background: #fef3c7; color: #92400e; }
 .badge-completed { background: #d1fae5; color: #065f46; }
+
+.action-buttons { display: flex; gap: 5px; }
+.action-buttons button { padding: 5px 10px; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-complete { background: #d1fae5; color: #065f46; }
+.btn-complete:hover { background: #10b981; color: white; }
+.btn-cancel { background: #fee2e2; color: #991b1b; }
+.btn-cancel:hover { background: #ef4444; color: white; }
+.btn-delete { background: #f1f5f9; color: #475569; }
+.btn-delete:hover { background: #1e293b; color: white; }
+
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
