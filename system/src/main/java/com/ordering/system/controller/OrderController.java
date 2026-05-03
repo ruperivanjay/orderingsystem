@@ -1,7 +1,9 @@
 package com.ordering.system.controller;
 
 import com.ordering.system.entity.Order;
+import com.ordering.system.entity.Product;
 import com.ordering.system.service.OrderService;
+import com.ordering.system.service.ProductService; // You need to import this
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,18 +12,32 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@CrossOrigin(origins = "*") // Helps prevent CORS errors between frontend and backend
 public class OrderController {
 
     private final OrderService orderService;
+    private final ProductService productService; // Add this service
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, ProductService productService) {
         this.orderService = orderService;
+        this.productService = productService;
     }
 
+    // Serves the HTML Page
     @GetMapping("/ordering-system")
     public String orderingSystemPage() {
         return "ordering-system";
     }
+
+    // --- PRODUCT ENDPOINTS (This fixes the 404 error from your screenshots) ---
+    
+    @GetMapping("/api/products")
+    @ResponseBody
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+
+    // --- ORDER ENDPOINTS ---
 
     @GetMapping("/api/orders")
     @ResponseBody
@@ -48,7 +64,6 @@ public class OrderController {
         }
     }
 
-    // UPDATED: Now matches the JS fetch request using @RequestBody
     @PutMapping("/api/orders/{id}/status")
     @ResponseBody
     public ResponseEntity<Order> updateStatus(@PathVariable Long id,
