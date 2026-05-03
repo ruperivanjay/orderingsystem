@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@RestController // Using @RestController simplifies @ResponseBody for every method
-@RequestMapping("/api")
+@RestController
+@RequestMapping("/api") // This makes all paths start with /api
 public class OrderController {
 
     private final OrderService orderService;
@@ -22,7 +22,7 @@ public class OrderController {
         this.productService = productService;
     }
 
-    // FIX: This solves the 404 error in your Network tab
+    // This fixes the red 404 error in your Network tab
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
