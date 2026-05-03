@@ -101,9 +101,18 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    /**
+     * Updated to handle payment status synchronization
+     */
     public Order updateStatus(Long id, String status) {
         Order order = getOrderById(id);
         order.setStatus(status);
+
+        // If the order is marked as COMPLETED, automatically mark it as Paid
+        if ("COMPLETED".equalsIgnoreCase(status)) {
+            order.setPaymentStatus("Paid");
+        }
+
         return orderRepository.save(order);
     }
 
