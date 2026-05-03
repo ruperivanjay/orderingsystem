@@ -29,12 +29,6 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @GetMapping("/api/orders/{id}")
-    @ResponseBody
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getOrderById(id));
-    }
-
     @PostMapping("/api/orders")
     @ResponseBody
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
@@ -42,27 +36,17 @@ public class OrderController {
             Order created = orderService.createOrder(order);
             return ResponseEntity.ok(created);
         } catch (RuntimeException e) {
-            java.util.Map<String, String> error = new java.util.HashMap<>();
+            Map<String, String> error = new java.util.HashMap<>();
             error.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
     }
 
-    // UPDATED: Now matches the JS fetch request using @RequestBody
     @PutMapping("/api/orders/{id}/status")
     @ResponseBody
-    public ResponseEntity<Order> updateStatus(@PathVariable Long id,
-                                               @RequestBody Map<String, String> body) {
+    public ResponseEntity<Order> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
         return ResponseEntity.ok(orderService.updateStatus(id, status));
-    }
-
-    @PutMapping("/api/orders/{id}/payment")
-    @ResponseBody
-    public ResponseEntity<Order> updatePayment(@PathVariable Long id,
-                                                @RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(
-            orderService.updatePaymentStatus(id, body.get("paymentStatus")));
     }
 
     @DeleteMapping("/api/orders/{id}")
@@ -70,11 +54,5 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/api/orders/search")
-    @ResponseBody
-    public ResponseEntity<List<Order>> searchOrders(@RequestParam String name) {
-        return ResponseEntity.ok(orderService.searchByCustomer(name));
     }
 }
