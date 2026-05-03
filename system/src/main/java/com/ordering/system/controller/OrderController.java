@@ -1,9 +1,9 @@
 package com.ordering.system.controller;
 
 import com.ordering.system.entity.Order;
-import com.ordering.system.entity.Product; // Ensure you have a Product entity
+import com.ordering.system.entity.Product;
 import com.ordering.system.service.OrderService;
-import com.ordering.system.service.ProductService; // Ensure you have a ProductService
+import com.ordering.system.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class OrderController {
 
     private final OrderService orderService;
-    private final ProductService productService; // Added ProductService
+    private final ProductService productService;
 
     public OrderController(OrderService orderService, ProductService productService) {
         this.orderService = orderService;
@@ -27,7 +27,7 @@ public class OrderController {
         return "ordering-system";
     }
 
-    // NEW: Endpoint to fix the 404 error in your screenshot
+    // This fixes the 404 error shown in image_fc5185.jpg
     @GetMapping("/api/products")
     @ResponseBody
     public ResponseEntity<List<Product>> getAllProducts() {
