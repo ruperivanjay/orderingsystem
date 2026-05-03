@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Ordering System</title>
-    <!-- Path matches: static/js/static/css/style.css -->
-    <link rel="stylesheet" th:href="@{/js/static/css/style.css}">
+    <!-- Standard path: static/css/style.css -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
@@ -46,29 +46,21 @@
             <div class="form-group">
                 <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
             </div>
-            <div class="item-grid" id="itemGrid">
-                <!-- JavaScript populates this -->
-            </div>
+            <div class="item-grid" id="itemGrid"></div>
         </div>
 
-        <!-- Cart Panel -->
+        <!-- Checkout Panel -->
         <div class="panel">
             <h3>Current Cart</h3>
             <div id="cartItems"></div>
 
             <div class="cart-summary">
-                <div class="summary-line">
-                    <span>Subtotal</span>
-                    <span id="subtotalDisplay">₱0.00</span>
-                </div>
+                <div class="summary-line"><span>Subtotal</span><span id="subtotalDisplay">₱0.00</span></div>
                 <div class="summary-line">
                     <span>Discount (₱)</span>
                     <input type="number" id="discountInput" value="0" min="0" oninput="calculateTotal()"/>
                 </div>
-                <div class="total-line">
-                    <span>Total</span>
-                    <span id="totalDisplay">₱0.00</span>
-                </div>
+                <div class="total-line"><span>Total</span><span id="totalDisplay">₱0.00</span></div>
             </div>
 
             <div class="checkout-form">
@@ -89,7 +81,6 @@
         </div>
     </div>
 
-    <!-- History Table -->
     <h3 style="margin-top:2rem; margin-bottom:1rem;">Recent Orders</h3>
     <div class="table-container">
         <table>
@@ -101,23 +92,17 @@
                     <th>Total</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="orderTableBody">
-                <!-- JavaScript populates this -->
-            </tbody>
+            <tbody id="orderTableBody"></tbody>
         </table>
     </div>
 </div>
 
-<!-- Core Authentication Logic -->
 <script th:src="@{/js/auth.js}"></script>
-<!-- Ordering Logic (Create this file next) -->
 <script th:src="@{/js/order-logic.js}"></script>
 
 <script>
-    // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
         if(requireLogin()) {
             const user = getCurrentUser();
