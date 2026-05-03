@@ -1,5 +1,9 @@
-// Load products into the grid
-async function fetchItems() {
+// This confirms the file actually loaded
+console.log("order-logic.js is active");
+
+// Use window. to make fetchItems visible globally
+window.fetchItems = async function() {
+    console.log("fetchItems called");
     try {
         const response = await fetch('/api/products', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
@@ -14,14 +18,16 @@ async function fetchItems() {
                     ₱${item.price.toFixed(2)}
                 </div>
             `).join('');
+            console.log("Products loaded into grid");
         }
     } catch (err) {
         console.error("Failed to load items:", err);
     }
 }
 
-// Load orders into the table
-async function fetchOrders() {
+// Use window. to make fetchOrders visible globally
+window.fetchOrders = async function() {
+    console.log("fetchOrders called");
     try {
         const response = await fetch('/api/orders', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
@@ -41,13 +47,15 @@ async function fetchOrders() {
                     <td><button onclick="updateStatus(${o.id}, 'Completed')">Done</button></td>
                 </tr>
             `).join('');
+            console.log("Orders loaded into table");
         }
     } catch (err) {
         console.error("Failed to load orders:", err);
     }
 }
 
-async function updateStatus(orderId, status) {
+// Use window. to make updateStatus visible globally
+window.updateStatus = async function(orderId, status) {
     if (!confirm(`Mark as ${status}?`)) return;
     const response = await fetch(`/api/orders/${orderId}/status`, {
         method: 'PUT',
