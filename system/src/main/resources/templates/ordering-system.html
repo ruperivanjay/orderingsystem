@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Ordering System</title>
+    <!-- Links to your CSS for the cinematic/glassmorphism design -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
+<!-- Notification container -->
 <div id="message"></div>
 
 <div class="navbar">
@@ -18,6 +20,7 @@
 </div>
 
 <div class="container">
+    <!-- Summary Cards Section -->
     <div class="summary-cards">
         <div class="card blue">
             <div class="card-label">Total Orders</div>
@@ -37,15 +40,20 @@
         </div>
     </div>
 
+    <!-- Main Ordering Layout -->
     <div class="order-layout">
+        <!-- Left Panel: Product Selection -->
         <div class="panel">
             <h3>Select Items</h3>
             <div class="form-group">
+                <!-- ID matches filterItems() logic in JS -->
                 <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
             </div>
+            <!-- CRITICAL ID: itemGrid is where products are injected -->
             <div class="item-grid" id="itemGrid"></div>
         </div>
 
+        <!-- Right Panel: Current Cart -->
         <div class="panel">
             <h3>Current Cart</h3>
             <div id="cartItems"></div>
@@ -77,6 +85,7 @@
         </div>
     </div>
 
+    <!-- Bottom Section: Recent Orders Table -->
     <h3 style="margin-top:2rem; margin-bottom:1rem;">Recent Orders</h3>
     <div class="table-container">
         <table>
@@ -91,24 +100,40 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+            <!-- CRITICAL ID: orderTableBody is where rows are injected -->
             <tbody id="orderTableBody"></tbody>
         </table>
     </div>
 </div>
 
+<!-- SCRIPT LOADING ORDER: CRITICAL TO FIX ReferenceError -->
+<!-- 1. Load Authentication helper first -->
 <script th:src="@{/js/auth.js}"></script>
+
+<!-- 2. Load Core logic (contains fetchItems and fetchOrders) -->
 <script th:src="@{/js/order-logic.js}"></script>
 
+<!-- 3. Inline script to initialize the page -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Ensure authentication logic exists before calling
         if(typeof requireLogin === 'function' && requireLogin()) {
             const user = getCurrentUser();
             const navUser = document.getElementById('nav-user');
-            if(navUser) navUser.textContent = user ? (user.sub || user.username) : 'User';
-            fetchItems();
-            fetchOrders();
+            if(navUser) {
+                navUser.textContent = user ? (user.sub || user.username) : 'User';
+            }
+            
+            // Wait a micro-second to ensure logic.js functions are registered
+            if (typeof fetchItems === 'function') {
+                fetchItems();
+                fetchOrders();
+            } else {
+                console.error("fetchItems is still not defined. Check order-logic.js for syntax errors.");
+            }
         }
     });
 </script>
+
 </body>
 </html>
