@@ -1,40 +1,54 @@
-// Function to load products/items
+// Load products into the "Select Items" grid
 async function fetchItems() {
     try {
-        const response = await fetch('/api/products'); // Adjust URL if different
-        const items = await response.json();
-        const grid = document.querySelector('.item-grid');
+        const response = await fetch('/api/products');
+        if (!response.ok) throw new Error('Network response was not ok');
         
-        grid.innerHTML = items.map(item => `
-            <div class="item-card ${item.stock <= 0 ? 'out-of-stock' : ''}" onclick="addToCart(${item.id})">
-                <span class="item-name"><strong>${item.name}</strong></span>
-                <span class="item-price">₱${item.price.toFixed(2)}</span>
-                <span class="item-stock">Stock: ${item.stock}</span>
-            </div>
-        `).join('');
+        const items = await response.json();
+        const grid = document.getElementById('productGrid');
+        
+        if (Array.isArray(items)) {
+            grid.innerHTML = items.map(item => `
+                <div class="item-card" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">
+                    <strong>${item.name}</strong><br>
+                    ₱${item.price.toFixed(2)}
+                </div>
+            `).join('');
+        }
     } catch (err) {
         console.error("Error loading items:", err);
     }
 }
 
-// Function to update order status (Fix for "CANCELLED")
-async function updateStatus(orderId, status) {
-    if (!confirm(`Mark order as ${status}?`)) return;
+// Load existing orders into the table
+async function fetchOrders() {
     try {
-        const response = await fetch(`/api/orders/${orderId}/status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: status }) 
-        });
+        const response = await fetch('/api/orders');
+        const orders = await response.json();
+        const tbody = document.getElementById('orderTableBody');
         
-        if (response.ok) fetchOrders();
-    } catch (err) { 
-        console.error("Status update failed:", err); 
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td>#${o.id}</td>
+                <td>${o.customerName}</td>
+                <td>${o.items}</td>
+                <td>₱${o.totalAmount.toFixed(2)}</td>
+                <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+                <td>
+                    ${o.status === 'PENDING' ? `
+                        <button onclick="updateStatus(${o.id}, 'COMPLETED')">Done</button>
+                        <button onclick="updateStatus(${o.id}, 'CANCELLED')">Cancel</button>
+                    ` : ''}
+                </td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error("Error loading orders:", err);
     }
 }
 
-// Initialize page
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    fetchItems();  // This fixes the ReferenceError
-    fetchOrders();
+    fetchItems();
+    fetchOrders(); // This prevents the "not defined" error
 });
