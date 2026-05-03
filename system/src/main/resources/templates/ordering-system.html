@@ -2,113 +2,100 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Ordering System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordering System | Dashboard</title>
+    <!-- Google Fonts for the modern "Inter" look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-<div id="message"></div>
+    <nav class="navbar">
+        <h1>Ordering System</h1>
+        <div class="user-profile">
+            <span id="userNameDisplay">jay</span>
+            <a th:href="@{/menu}" class="back-btn">Back to Menu</a>
+        </div>
+    </nav>
 
-<div class="navbar">
-    <h1>Ordering System</h1>
-    <div style="display:flex;align-items:center;gap:1.5rem;">
-        <span id="nav-user" style="font-size:13px; opacity:0.9; font-weight: 500;"></span>
-        <a th:href="@{/dashboard}" class="back-btn">← Back to Menu</a>
-    </div>
-</div>
-
-<div class="container">
-    <div class="summary-cards">
-        <div class="card blue">
-            <div class="card-label">Total Orders</div>
-            <div class="card-value" id="totalOrders">0</div>
-        </div>
-        <div class="card green">
-            <div class="card-label">Completed</div>
-            <div class="card-value" id="completedOrders">0</div>
-        </div>
-        <div class="card amber">
-            <div class="card-label">Pending</div>
-            <div class="card-value" id="pendingOrders">0</div>
-        </div>
-        <div class="card">
-            <div class="card-label">Total Sales</div>
-            <div class="card-value" id="totalSales">₱0.00</div>
-        </div>
-    </div>
-
-    <div class="order-layout">
-        <div class="panel">
-            <h3>Select Items</h3>
-            <div class="form-group">
-                <input type="text" id="searchInput" placeholder="Search products..." oninput="filterItems()" />
+    <div class="container">
+        <!-- Summary Stats Section -->
+        <div class="summary-cards">
+            <div class="card">
+                <span class="card-label">Total Orders</span>
+                <div class="card-value" id="statTotalOrders">0</div>
             </div>
-            <div class="item-grid" id="itemGrid"></div>
+            <div class="card">
+                <span class="card-label">Total Sales</span>
+                <div class="card-value" id="statTotalSales">₱0.00</div>
+            </div>
         </div>
 
-        <div class="panel">
-            <h3>Current Cart</h3>
-            <div id="cartItems"></div>
-
-            <div class="cart-summary">
-                <div class="summary-line"><span>Subtotal</span><span id="subtotalDisplay">₱0.00</span></div>
-                <div class="summary-line">
-                    <span>Discount (₱)</span>
-                    <input type="number" id="discountInput" value="0" min="0" oninput="calculateTotal()"/>
-                </div>
-                <div class="total-line"><span>Total</span><span id="totalDisplay">₱0.00</span></div>
-            </div>
-
-            <div class="checkout-form">
-                <div class="form-group">
-                    <label>Customer Name</label>
-                    <input type="text" id="customerName" placeholder="Enter name..." />
-                </div>
-                <div class="form-group">
-                    <label>Payment Method</label>
-                    <select id="paymentMethod">
-                        <option value="Cash">Cash</option>
-                        <option value="GCash">GCash</option>
-                        <option value="Card">Card</option>
-                    </select>
+        <div class="order-layout">
+            <!-- Left Side: Product Selection -->
+            <div class="panel">
+                <h3>Select Items</h3>
+                <input type="text" id="productSearch" placeholder="Search products..." onkeyup="filterProducts()">
+                <div class="item-grid" id="productGrid">
+                    <!-- Products from /api/products will load here -->
                 </div>
             </div>
-            <button class="place-order-btn" onclick="processCheckout()">Process Checkout</button>
+
+            <!-- Right Side: Current Cart -->
+            <div class="panel">
+                <h3>Current Cart</h3>
+                <div id="cartItemsList" class="cart-items-list">
+                    <!-- Selected items appear here -->
+                </div>
+                
+                <div class="cart-summary">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="cartSubtotal">₱0.00</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Discount (₱)</label>
+                        <input type="number" id="cartDiscount" value="0" onchange="updateCartTotals()">
+                    </div>
+                    <div class="total-line">
+                        <span>Total</span>
+                        <span id="cartTotal">₱0.00</span>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label>Customer Name</label>
+                        <input type="text" id="customerName" placeholder="Enter name...">
+                    </div>
+                    
+                    <button class="place-order-btn" onclick="processCheckout()">Process Checkout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom: Recent Orders Table -->
+        <div class="panel" style="margin-top: 2rem;">
+            <h3>Recent Orders</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <!-- Orders from /api/orders will load here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <h3 style="margin-top:2rem; margin-bottom:1rem;">Recent Orders</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Order #</th>
-                    <th>Customer</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="orderTableBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<script th:src="@{/js/auth.js}"></script>
-<script th:src="@{/js/order-logic.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        if(typeof requireLogin === 'function' && requireLogin()) {
-            const user = getCurrentUser();
-            const navUser = document.getElementById('nav-user');
-            if(navUser) navUser.textContent = user ? (user.sub || user.username) : 'User';
-            fetchItems();
-            fetchOrders();
-        }
-    });
-</script>
+    <!-- Scripts at the bottom to prevent "is not defined" errors -->
+    <script th:src="@{/js/order-logic.js}"></script>
 </body>
 </html>
