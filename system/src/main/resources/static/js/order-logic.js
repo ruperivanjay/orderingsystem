@@ -1,13 +1,19 @@
-// This confirms the file actually loaded
-console.log("order-logic.js is active");
+// Verification log to ensure the script is running
+console.log("order-logic.js has been successfully initialized.");
 
-// Use window. to make fetchItems visible globally
+/**
+ * Loads products from the API and populates the item grid.
+ * Attached to 'window' to ensure it's globally accessible.
+ */
 window.fetchItems = async function() {
-    console.log("fetchItems called");
+    console.log("Executing fetchItems...");
     try {
         const response = await fetch('/api/products', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const items = await response.json();
         const grid = document.getElementById('itemGrid');
         
@@ -18,20 +24,25 @@ window.fetchItems = async function() {
                     ₱${item.price.toFixed(2)}
                 </div>
             `).join('');
-            console.log("Products loaded into grid");
+            console.log("Item grid updated.");
         }
     } catch (err) {
         console.error("Failed to load items:", err);
     }
-}
+};
 
-// Use window. to make fetchOrders visible globally
+/**
+ * Loads recent orders from the API and populates the table.
+ */
 window.fetchOrders = async function() {
-    console.log("fetchOrders called");
+    console.log("Executing fetchOrders...");
     try {
         const response = await fetch('/api/orders', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const orders = await response.json();
         const tbody = document.getElementById('orderTableBody');
         
@@ -47,23 +58,35 @@ window.fetchOrders = async function() {
                     <td><button onclick="updateStatus(${o.id}, 'Completed')">Done</button></td>
                 </tr>
             `).join('');
-            console.log("Orders loaded into table");
+            console.log("Order table updated.");
         }
     } catch (err) {
         console.error("Failed to load orders:", err);
     }
-}
+};
 
-// Use window. to make updateStatus visible globally
+/**
+ * Updates the status of an existing order.
+ */
 window.updateStatus = async function(orderId, status) {
-    if (!confirm(`Mark as ${status}?`)) return;
-    const response = await fetch(`/api/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: { 
-            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ status: status })
-    });
-    if (response.ok) fetchOrders();
-}
+    if (!confirm(`Mark order #${orderId} as ${status}?`)) return;
+    
+    try {
+        const response = await fetch(`/api/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: { 
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ status: status })
+        });
+        
+        if (response.ok) {
+            window.fetchOrders();
+        } else {
+            console.error("Failed to update status.");
+        }
+    } catch (err) {
+        console.error("Error updating status:", err);
+    }
+};
