@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api") // This makes all paths start with /api
+@RequestMapping("/api") // All paths start with /api
 public class OrderController {
 
     private final OrderService orderService;
@@ -22,7 +22,7 @@ public class OrderController {
         this.productService = productService;
     }
 
-    // This fixes the red 404 error in your Network tab
+    // Resolves the 404 for /api/products seen in image_fbd99d.jpg
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
