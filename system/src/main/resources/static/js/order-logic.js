@@ -1,18 +1,14 @@
-// Verification log to ensure the script is running
-console.log("order-logic.js has been successfully initialized.");
+// This confirms the file is actually being read by the browser
+console.log("order-logic.js: Script is loaded and running.");
 
-/**
- * Loads products from the API and populates the item grid.
- * Attached to 'window' to ensure it's globally accessible.
- */
 window.fetchItems = async function() {
-    console.log("Executing fetchItems...");
+    console.log("order-logic.js: fetchItems() called.");
     try {
         const response = await fetch('/api/products', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error("Server error: " + response.status);
         
         const items = await response.json();
         const grid = document.getElementById('itemGrid');
@@ -24,24 +20,21 @@ window.fetchItems = async function() {
                     ₱${item.price.toFixed(2)}
                 </div>
             `).join('');
-            console.log("Item grid updated.");
+            console.log("order-logic.js: Products rendered.");
         }
     } catch (err) {
-        console.error("Failed to load items:", err);
+        console.error("order-logic.js: fetchItems Error ->", err);
     }
 };
 
-/**
- * Loads recent orders from the API and populates the table.
- */
 window.fetchOrders = async function() {
-    console.log("Executing fetchOrders...");
+    console.log("order-logic.js: fetchOrders() called.");
     try {
         const response = await fetch('/api/orders', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error("Server error: " + response.status);
         
         const orders = await response.json();
         const tbody = document.getElementById('orderTableBody');
@@ -58,19 +51,15 @@ window.fetchOrders = async function() {
                     <td><button onclick="updateStatus(${o.id}, 'Completed')">Done</button></td>
                 </tr>
             `).join('');
-            console.log("Order table updated.");
+            console.log("order-logic.js: Orders rendered.");
         }
     } catch (err) {
-        console.error("Failed to load orders:", err);
+        console.error("order-logic.js: fetchOrders Error ->", err);
     }
 };
 
-/**
- * Updates the status of an existing order.
- */
 window.updateStatus = async function(orderId, status) {
     if (!confirm(`Mark order #${orderId} as ${status}?`)) return;
-    
     try {
         const response = await fetch(`/api/orders/${orderId}/status`, {
             method: 'PUT',
@@ -80,13 +69,8 @@ window.updateStatus = async function(orderId, status) {
             },
             body: JSON.stringify({ status: status })
         });
-        
-        if (response.ok) {
-            window.fetchOrders();
-        } else {
-            console.error("Failed to update status.");
-        }
+        if (response.ok) window.fetchOrders();
     } catch (err) {
-        console.error("Error updating status:", err);
+        console.error("order-logic.js: updateStatus Error ->", err);
     }
 };
