@@ -18,27 +18,23 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // Thymeleaf page
     @GetMapping("/ordering-system")
     public String orderingSystemPage() {
         return "ordering-system";
     }
 
-    // REST - Get all orders
     @GetMapping("/api/orders")
     @ResponseBody
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    // REST - Get order by ID
     @GetMapping("/api/orders/{id}")
     @ResponseBody
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
- // REST - Create order
     @PostMapping("/api/orders")
     @ResponseBody
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
@@ -52,15 +48,15 @@ public class OrderController {
         }
     }
 
-    // REST - Update order status
+    // UPDATED: Now matches the JS fetch request using @RequestBody
     @PutMapping("/api/orders/{id}/status")
     @ResponseBody
     public ResponseEntity<Order> updateStatus(@PathVariable Long id,
                                                @RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(orderService.updateStatus(id, body.get("status")));
+        String status = body.get("status");
+        return ResponseEntity.ok(orderService.updateStatus(id, status));
     }
 
-    // REST - Update payment status
     @PutMapping("/api/orders/{id}/payment")
     @ResponseBody
     public ResponseEntity<Order> updatePayment(@PathVariable Long id,
@@ -69,7 +65,6 @@ public class OrderController {
             orderService.updatePaymentStatus(id, body.get("paymentStatus")));
     }
 
-    // REST - Delete order
     @DeleteMapping("/api/orders/{id}")
     @ResponseBody
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
@@ -77,7 +72,6 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    // REST - Search by customer
     @GetMapping("/api/orders/search")
     @ResponseBody
     public ResponseEntity<List<Order>> searchOrders(@RequestParam String name) {
