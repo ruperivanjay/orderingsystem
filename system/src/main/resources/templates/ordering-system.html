@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Ordering System</title>
-    <!-- Updated path to match your current GitHub folder (static/js/style.css) -->
-    <link rel="stylesheet" th:href="@{/js/style.css}">
+    <!-- Updated path to match your nested GitHub structure: static/js/static/css/style.css -->
+    <link rel="stylesheet" th:href="@{/js/static/css/style.css}">
 </head>
 <body>
 
@@ -19,7 +19,6 @@
 </div>
 
 <div class="container">
-    <!-- Summary Cards -->
     <div class="summary-cards">
         <div class="card">
             <div class="card-label">Total Orders</div>
@@ -40,7 +39,6 @@
     </div>
 
     <div class="order-layout">
-        <!-- Item Selection -->
         <div class="panel">
             <h3>Select Items</h3>
             <div class="form-group">
@@ -49,7 +47,6 @@
             <div class="item-grid" id="itemGrid"></div>
         </div>
 
-        <!-- Checkout Panel -->
         <div class="panel">
             <h3>Current Cart</h3>
             <div id="cartItems">
@@ -89,7 +86,7 @@
         </div>
     </div>
 
-    <h3 style="margin-bottom:1rem; font-size:18px;">Recent Orders</h3>
+    <h3 style="margin-top:2rem; margin-bottom:1rem; font-size:18px;">Recent Orders</h3>
     <div class="table-container">
         <table>
             <thead>
@@ -100,7 +97,6 @@
                     <th>Total</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="orderTableBody"></tbody>
@@ -108,7 +104,6 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script th:src="@{/js/auth.js}"></script>
 <script th:src="@{/js/order-logic.js}"></script>
 </body>
